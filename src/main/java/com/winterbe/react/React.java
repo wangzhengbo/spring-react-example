@@ -74,10 +74,12 @@ public class React {
     };
 
     public String renderCommentBoxUsingV8(List<Comment> comments) {
+        V8Array parameters = null;
+        V8Array v8Array = null;
         try {
             V8 v8 = v8EngineHolder.get();
-            V8Array parameters = new V8Array(v8);
-            V8Array v8Array = new V8Array(v8);
+            parameters = new V8Array(v8);
+            v8Array = new V8Array(v8);
             for (Comment comment : comments) {
                 V8Object v8Value = new V8Object(v8);
                 v8Value.add("author", comment.getAuthor());
@@ -87,7 +89,18 @@ public class React {
             parameters.push(v8Array);
             return v8.executeStringFunction("renderServer", parameters);
         } catch (Exception e) {
-            throw new IllegalStateException("failed to render react component", e);
+            throw new IllegalStateException("failed to render react component using v8", e);
+        } finally {
+            if (v8Array != null) {
+                for (int i = 0, size = v8Array.length(); i < size; i++) {
+                    V8Object v8Value = (V8Object) v8Array.get(i);
+                    v8Value.release();
+                }
+                v8Array.release();
+            }
+            if (parameters != null) {
+                parameters.release();
+            }
         }
     }
 
@@ -97,7 +110,7 @@ public class React {
             Object html = invocable.invokeFunction("renderServer", comments);
             return String.valueOf(html);
         } catch (Exception e) {
-            throw new IllegalStateException("failed to render react component", e);
+            throw new IllegalStateException("failed to render react component using nashorn", e);
         }
     }
 
@@ -116,7 +129,7 @@ public class React {
             Object html = invocable.invokeFunction("renderServer", new NativeArray(arr));
             return String.valueOf(html);
         } catch (Exception e) {
-            throw new IllegalStateException("failed to render react component", e);
+            throw new IllegalStateException("failed to render react component using rhino", e);
         }
     }
 
@@ -126,7 +139,7 @@ public class React {
             V8Array parameters = new V8Array(v8);
             return v8.executeStringFunction("renderServer2", parameters);
         } catch (Exception e) {
-            throw new IllegalStateException("failed to render react component", e);
+            throw new IllegalStateException("failed to render react component using v8", e);
         }
     }
 
@@ -136,7 +149,7 @@ public class React {
             Object html = invocable.invokeFunction("renderServer2");
             return String.valueOf(html);
         } catch (Exception e) {
-            throw new IllegalStateException("failed to render react component", e);
+            throw new IllegalStateException("failed to render react component using nashorn", e);
         }
     }
 
@@ -146,7 +159,7 @@ public class React {
             Object html = invocable.invokeFunction("renderServer2");
             return String.valueOf(html);
         } catch (Exception e) {
-            throw new IllegalStateException("failed to render react component", e);
+            throw new IllegalStateException("failed to render react component using rhino", e);
         }
     }
 
