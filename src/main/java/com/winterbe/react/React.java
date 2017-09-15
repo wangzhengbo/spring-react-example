@@ -16,6 +16,7 @@ import org.mozilla.javascript.NativeObject;
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class React {
     private ThreadLocal<V8> v8EngineHolder = new ThreadLocal<V8>() {
@@ -116,17 +117,14 @@ public class React {
 
     public String renderCommentBoxUsingRhino(List<Comment> comments) {
         try {
-            Invocable invocable = (Invocable) rhinoEngineHolder.get();
+            ScriptEngine engine = rhinoEngineHolder.get();
+            Invocable invocable = (Invocable) engine;
 
-            Object[] arr = new Object[comments.size()];
-            for (int i = 0; i < comments.size(); i++) {
-                NativeObject obj = new NativeObject();
-                obj.put("text", obj, comments.get(i).getText());
-                obj.put("author", obj, comments.get(i).getAuthor());
+            ObjectMapper mapper = new ObjectMapper();
+            String strComments = mapper.writeValueAsString(comments);
+            Object jsonComments = engine.eval(strComments);
 
-                arr[i] = obj;
-            }
-            Object html = invocable.invokeFunction("renderServer", new NativeArray(arr));
+            Object html = invocable.invokeFunction("renderServer", jsonComments);
             return String.valueOf(html);
         } catch (Exception e) {
             throw new IllegalStateException("failed to render react component using rhino", e);
