@@ -52,6 +52,21 @@
 			<version>1.7.3</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.mozilla</groupId>
+			<artifactId>rhino</artifactId>
+			<version>1.7.7.2</version>
+		</dependency>
+		<dependency>
+			<groupId>cat.inspiracio</groupId>
+			<artifactId>rhino-js-engine</artifactId>
+			<version>1.7.7.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.eclipsesource.j2v8</groupId>
+			<artifactId>j2v8_win32_x86_64</artifactId>
+			<version>4.6.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -110,8 +110,36 @@ var renderClient = function (comments) {
 };
 
 var renderServer = function (comments) {
-    var data = Java.from(comments);
+	var data = null;
+	if (comments instanceof Array) {
+		data = comments;
+	} else if (typeof Java != 'undefined') {
+		data = Java.from(comments);
+	} else {
+		data = [];
+		for (var i = 0; i < comments.length; i++) {
+			data.push({
+				author: comments[i].author,
+				text: comments[i].text
+			});
+		}
+	}
+
     return React.renderToString(
         React.createElement(CommentBox, {data: data, url: "comments.json", pollInterval: 5000})
     );
+};
+
+var renderServer2 = function () {
+    var data = [
+    	{
+    		author: "Peter Parker",
+    		text: "This is a comment."
+    	},
+    	{
+    		author: "John Doe",
+    		text: "This is *another* comment."
+    	}
+	];
+    return renderServer(data);
 };

@@ -30,7 +30,7 @@ public class MainController {
     @RequestMapping("/")
     public String index(Map<String, Object> model) throws Exception {
         List<Comment> comments = service.getComments();
-        String commentBox = react.renderCommentBox(comments);
+        String commentBox = react.renderCommentBoxUsingRhino(comments);
         String data = mapper.writeValueAsString(comments);
         model.put("content", commentBox);
         model.put("data", data);
