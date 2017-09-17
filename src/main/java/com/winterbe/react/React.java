@@ -10,9 +10,7 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.NativeObject;
-
+import com.eclipsesource.v8.NodeJS;
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
@@ -22,15 +20,9 @@ public class React {
     private ThreadLocal<V8> v8EngineHolder = new ThreadLocal<V8>() {
         @Override
         protected V8 initialValue() {
-            V8 v8 = V8.createV8Runtime();
+            NodeJS nodeJS = NodeJS.createNodeJS();
+            V8 v8 = nodeJS.getRuntime();
             try {
-                Console console = new Console();
-                V8Object v8Console = new V8Object(v8);
-                v8.add("console", v8Console);
-                v8Console.registerJavaMethod(console, "log", "log", new Class<?>[] { Object.class });
-                v8Console.registerJavaMethod(console, "error", "error", new Class<?>[] { Object.class });
-                v8Console.release();
-
                 v8.executeVoidScript(readAsString("static/v8-polyfill.js"));
                 v8.executeVoidScript(readAsString("static/vendor/react.js"));
                 v8.executeVoidScript(readAsString("static/vendor/showdown.min.js"));
@@ -172,15 +164,5 @@ public class React {
         }
 
         return sb.toString();
-    }
-
-    private class Console {
-        public void log(final Object message) {
-            System.out.println("[INFO] " + message.getClass().getName());
-        }
-
-        public void error(final Object message) {
-            System.out.println("[ERROR] " + message);
-        }
     }
 }
